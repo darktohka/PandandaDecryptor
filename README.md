@@ -22,7 +22,7 @@ On Windows, simply run `start.bat` to decrypt all SWFs in your current directory
 It is also possible to specify the source and target directory on the command line.
 
 ```
-usage: python -m pandadnadecryptor.Main [-h] [--key KEY] [source] [target]
+usage: python -m pandandadecryptor.Main [-h] [--key KEY] [source] [target]
 
 positional arguments:
   source             The source folder, containing your encrypted SWF.
@@ -33,5 +33,5 @@ optional arguments:
   --key KEY, -k KEY  The Pandanda SWF decryption key.
   
 example:
-  python -m pandadnadecryptor.Main C:/Pandanda C:/Pandanda/decrypted
+  python -m pandandadecryptor.Main C:/Pandanda C:/Pandanda/decrypted
 ```
