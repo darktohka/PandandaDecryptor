@@ -1,5 +1,7 @@
 import os
 
+SWF_MAGIC = b'CWS'
+
 class PandandaDecryptor(object):
 
     def __init__(self, key):
@@ -15,11 +17,16 @@ class PandandaDecryptor(object):
             return False
 
         with open(filename, 'rb') as f:
-            return f.read(3) != b'CWS'
+            return f.read(len(SWF_MAGIC)) != SWF_MAGIC
 
     def decrypt_bytes(self, swf):
         l = len(self.key)
-        return bytes([k ^ self.key[i % l] for i, k in enumerate(swf)])
+        result = bytes([k ^ self.key[i % l] for i, k in enumerate(swf)])
+
+        if result[:len(SWF_MAGIC)] != SWF_MAGIC:
+            raise Exception('Incorrect SWF or decryption key.')
+
+        return result
 
     def decrypt_file(self, source_filename, target_filename):
         with open(source_filename, 'rb') as source:
@@ -27,8 +34,8 @@ class PandandaDecryptor(object):
                 target.write(self.decrypt_bytes(source.read()))
 
     def decrypt_folder(self, source_folder, target_folder):
-        source_folder = source_folder.strip(os.sep)
-        target_folder = target_folder.strip(os.sep)
+        source_folder = source_folder.strip('\\/')
+        target_folder = target_folder.strip('\\/')
 
         if source_folder == target_folder:
             raise Exception('Target folder cannot be the same as the source folder!')
@@ -47,4 +54,8 @@ class PandandaDecryptor(object):
 
                 target_file = os.path.join(target_root, file)
                 print('Decrypting...', source_file)
-                self.decrypt_file(source_file, target_file)
+
+                try:
+                    self.decrypt_file(source_file, target_file)
+                except Exception as e:
+                    print('Decryption failed:', e, source_file)
