@@ -1,6 +1,7 @@
 import os
 
-SWF_MAGIC = b'CWS'
+SWF_MAGIC = [b'CWS', b'FWS']
+SWF_MAGIC_LEN = 3
 
 class PandandaDecryptor(object):
 
@@ -17,13 +18,13 @@ class PandandaDecryptor(object):
             return False
 
         with open(filename, 'rb') as f:
-            return f.read(len(SWF_MAGIC)) != SWF_MAGIC
+            return f.read(SWF_MAGIC_LEN) not in SWF_MAGIC
 
     def decrypt_bytes(self, swf):
         l = len(self.key)
         result = bytes([k ^ self.key[i % l] for i, k in enumerate(swf)])
 
-        if result[:len(SWF_MAGIC)] != SWF_MAGIC:
+        if result[:SWF_MAGIC_LEN] not in SWF_MAGIC:
             raise Exception('Incorrect SWF or decryption key.')
 
         return result
